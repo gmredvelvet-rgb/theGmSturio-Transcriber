@@ -17,7 +17,20 @@ Features a modern GUI with campaign management, AI-powered session summaries via
 - **CPU optimized** — runs with `int8` quantization, no GPU needed
 - **Standalone .exe** — package as a portable Windows executable
 
-## Prerequisites
+## Quick Start (Users)
+
+1. Go to the [Releases](../../releases) page
+2. Download the latest `TheGmstudioTranscriber2-vX.X.X.zip`
+3. Extract the ZIP anywhere on your PC
+4. Double-click `TheGmstudioTranscriber2.exe`
+
+That's it — no Python, no FFmpeg, no terminal commands needed. Everything is bundled.
+
+## Developer Setup
+
+If you want to run from source or contribute:
+
+### Prerequisites
 
 1. **Python 3.11+**
 2. **FFmpeg** in your system PATH
@@ -26,7 +39,7 @@ Features a modern GUI with campaign management, AI-powered session summaries via
    ```
    Or download from https://ffmpeg.org/download.html and add to PATH.
 
-## Installation
+### Installation
 
 ```bash
 git clone https://github.com/gmredvelvet-rgb/theGmSturio-Transcriber.git
@@ -38,7 +51,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Usage
+### Run
 
 ```bash
 python main.py
@@ -97,12 +110,6 @@ In the app's **Summary** tab:
 | `large-v3` | ~10 GB | Best quality |
 
 All models use `int8` compute type to reduce memory usage.
-
-## Download & Run (No Installation Required)
-
-Go to the [Releases](../../releases) page and download the latest `.zip`. Extract it anywhere and double-click `TheGmstudioTranscriber2.exe` — everything is included (FFmpeg, Python runtime, all dependencies).
-
-No Python, no FFmpeg install, no terminal commands needed.
 
 ## Building a Standalone Executable (for developers)
 

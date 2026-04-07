@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Audio temp files
+output/_input_temp/
+output/_temp/
+campaigns/*/transcripts/_input_temp/
+campaigns/*/transcripts/_temp/
+
+# Models (keep folder via .gitkeep)
+models/*.bin
+models/*.pt
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Virtual environment
+venv/
+.env/

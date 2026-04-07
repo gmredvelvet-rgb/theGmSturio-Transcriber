@@ -25,8 +25,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download FFmpeg
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile ffmpeg.zip
+          Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_temp
+          $ffmpegDir = Get-ChildItem -Path ffmpeg_temp -Directory | Select-Object -First 1
+          New-Item -ItemType Directory -Path "ffmpeg_bundle" -Force
+          Copy-Item "$($ffmpegDir.FullName)\bin\ffmpeg.exe" "ffmpeg_bundle\"
+          Copy-Item "$($ffmpegDir.FullName)\bin\ffprobe.exe" "ffmpeg_bundle\"
+
       - name: Build executable
         run: python build.py
+
+      - name: Bundle FFmpeg with executable
+        run: |
+          Copy-Item -Path "ffmpeg_bundle" -Destination "dist/TheGmstudioTranscriber2/ffmpeg" -Recurse
 
       - name: Create ZIP archive
         run: |

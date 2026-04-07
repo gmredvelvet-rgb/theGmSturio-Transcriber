@@ -98,15 +98,21 @@ In the app's **Summary** tab:
 
 All models use `int8` compute type to reduce memory usage.
 
-## Building a Standalone Executable
+## Download & Run (No Installation Required)
+
+Go to the [Releases](../../releases) page and download the latest `.zip`. Extract it anywhere and double-click `TheGmstudioTranscriber2.exe` — everything is included (FFmpeg, Python runtime, all dependencies).
+
+No Python, no FFmpeg install, no terminal commands needed.
+
+## Building a Standalone Executable (for developers)
 
 ```bash
 python build.py
 ```
 
-Generates `dist/Whisperer/Whisperer.exe`. Copy the folder anywhere and run it directly.
+Generates `dist/TheGmstudioTranscriber2/`. To include FFmpeg, place `ffmpeg.exe` and `ffprobe.exe` inside a `ffmpeg/` subfolder next to the executable.
 
-> **Note:** FFmpeg must still be available in the system PATH.
+The GitHub Actions workflow handles this automatically when you publish a Release.
 
 ## Project Structure
 

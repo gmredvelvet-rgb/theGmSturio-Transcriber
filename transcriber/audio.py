@@ -4,11 +4,20 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from .config import AUDIO_CHANNELS, AUDIO_SAMPLE_RATE, SUPPORTED_EXTENSIONS
 
 logger = logging.getLogger(__name__)
+
+
+def _app_dir() -> Path:
+    """Return the application directory (handles PyInstaller bundled mode)."""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
+    return Path(__file__).resolve().parent.parent
+
 
 # Known paths where winget/chocolatey install ffmpeg on Windows
 _FFMPEG_SEARCH_PATHS = [
@@ -20,13 +29,19 @@ _FFMPEG_SEARCH_PATHS = [
 
 
 def _find_ffmpeg() -> str:
-    """Find the ffmpeg executable, searching PATH and known locations."""
-    # First try normal PATH
+    """Find the ffmpeg executable, searching bundled dir, PATH, and known locations."""
+    # 1. Check bundled ffmpeg next to the executable
+    bundled = _app_dir() / "ffmpeg" / "ffmpeg.exe"
+    if bundled.exists():
+        logger.info("Using bundled ffmpeg: %s", bundled)
+        return str(bundled)
+
+    # 2. Try normal PATH
     found = shutil.which("ffmpeg")
     if found:
         return found
 
-    # Search known installation paths (winget, etc.)
+    # 3. Search known installation paths (winget, etc.)
     for base in _FFMPEG_SEARCH_PATHS:
         if not base.exists():
             continue
@@ -35,8 +50,8 @@ def _find_ffmpeg() -> str:
             return str(match)
 
     raise FileNotFoundError(
-        "ffmpeg not found. Install it with: winget install FFmpeg\n"
-        "Then restart the application."
+        "ffmpeg not found. Place the ffmpeg folder next to the executable,\n"
+        "or install it with: winget install FFmpeg"
     )
 
 

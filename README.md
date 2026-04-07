@@ -1,165 +1,132 @@
-# 🎙️ Whisperer
+# TheGmStudio Transcriber
 
-Transcriptor de sesiones de rol grabadas con [Craig Bot](https://craig.chat/) en Discord.
+A desktop app for transcribing tabletop RPG sessions recorded with [Craig Bot](https://craig.chat/) on Discord. Built with **faster-whisper** optimized for CPU — no NVIDIA GPU required.
 
-Usa **faster-whisper** optimizado para CPU — diseñado para funcionar sin GPU NVIDIA.
+Features a modern GUI with campaign management, AI-powered session summaries via **Ollama**, and Discord webhook integration.
 
-**Incluye interfaz gráfica y modo CLI.**
+![Python](https://img.shields.io/badge/Python-3.11+-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
-## Hardware Probado
+## Features
 
-| Componente | Especificación |
-|------------|---------------|
-| CPU | AMD Ryzen 5 5500 |
-| RAM | 24 GB |
-| GPU | AMD RX 6650 XT (no se usa, sin CUDA) |
-| OS | Windows 11 |
+- **Automatic transcription** of multi-track audio from Craig Bot recordings
+- **Campaign system** — organize sessions by campaign, track transcripts over time
+- **AI session summaries** — generate narrative recaps using local LLMs through Ollama
+- **Discord integration** — send summaries directly to a channel via webhook
+- **Multiple output formats** — TXT, Markdown, JSON
+- **Multi-language support** — Spanish, English, Portuguese, French, German, or auto-detect
+- **CPU optimized** — runs with `int8` quantization, no GPU needed
+- **Standalone .exe** — package as a portable Windows executable
 
-## Requisitos Previos
+## Prerequisites
 
 1. **Python 3.11+**
-2. **FFmpeg** instalado y disponible en PATH
+2. **FFmpeg** in your system PATH
    ```
    winget install FFmpeg
    ```
-   O descargarlo de https://ffmpeg.org/download.html y agregar al PATH.
+   Or download from https://ffmpeg.org/download.html and add to PATH.
 
-## Instalación
+## Installation
 
 ```bash
-cd whisperer
+git clone https://github.com/gmredvelvet-rgb/theGmSturio-Transcriber.git
+cd theGmSturio-Transcriber
 
-# Crear entorno virtual
 python -m venv venv
 venv\Scripts\activate
 
-# Instalar dependencias
 pip install -r requirements.txt
 ```
 
-## Uso — Interfaz Gráfica (recomendado)
+## Usage
 
 ```bash
 python main.py
 ```
 
-Esto abre la ventana de Whisperer donde puedes:
+This opens the GUI where you can:
 
-1. **Agregar archivos** o **abrir una carpeta** de Craig Bot
-2. Seleccionar modelo, idioma, formato de salida
-3. Hacer clic en **Iniciar Transcripción**
-4. Ver el progreso y log en tiempo real
-5. Abrir el archivo generado directamente desde la app
+1. **Add files** or **open a folder** with Craig Bot recordings
+2. Pick a whisper model, language, and output format
+3. Click **Start Transcription** and watch progress in real time
+4. Browse and manage campaigns with per-session transcripts
+5. Generate AI summaries and send them to Discord
 
-## Uso — Línea de Comandos
+## Setting Up Ollama (AI Summaries)
+
+The app uses [Ollama](https://ollama.com) to run local language models for generating narrative session summaries.
+
+### 1. Install Ollama
+
+Download and install from https://ollama.com/download.
+
+### 2. Pull a model
+
+Open a terminal and pull one of the recommended models:
 
 ```bash
-python main.py --cli transcribe ./craig_session/ [OPCIONES]
+# Lightweight and fast (recommended to start)
+ollama pull mistral
+
+# Higher quality alternatives
+ollama pull llama3.2
+ollama pull llama3.1:8b
+ollama pull gemma2:9b
 ```
 
-### Opciones CLI
+### 3. Keep Ollama running
 
-```
-  -o, --output DIR        Directorio de salida (default: output/)
-  -m, --model TEXT        Modelo: small, medium, large-v3 (default: medium)
-  -l, --language TEXT     Idioma: es, en, etc. (default: auto-detectar)
-  -f, --format TEXT       Formato: txt, markdown, json (default: txt)
-  -t, --threads INT       Threads de CPU (default: 6)
-  --filename TEXT         Nombre del archivo de salida (default: transcript)
-  --no-merge             No fusionar segmentos consecutivos
-  -v, --verbose          Logs detallados
-```
+Ollama runs as a local server on `http://localhost:11434`. Just make sure it's running before generating summaries. The app will auto-detect available models.
 
-## Empaquetar como .exe (software local)
+### 4. Generate a summary
 
-Para generar un ejecutable standalone que no necesita Python instalado:
+In the app's **Summary** tab:
+1. Select a transcript
+2. Pick a model from the dropdown (auto-populated from Ollama)
+3. Click **Generate Summary**
+4. Optionally send it to Discord via webhook
+
+> **RAM usage:** `mistral` needs ~4 GB, `llama3.1:8b` needs ~8 GB. With 16+ GB of RAM you're good.
+
+## Whisper Models
+
+| Model | RAM | Speed |
+|-------|-----|-------|
+| `small` | ~2 GB | Fast |
+| `medium` | ~5 GB | Balanced |
+| `large-v3` | ~10 GB | Best quality |
+
+All models use `int8` compute type to reduce memory usage.
+
+## Building a Standalone Executable
 
 ```bash
 python build.py
 ```
 
-Esto genera `dist/Whisperer/Whisperer.exe`. Puedes mover esa carpeta a cualquier
-lugar de tu PC y ejecutar directamente.
+Generates `dist/Whisperer/Whisperer.exe`. Copy the folder anywhere and run it directly.
 
-> **Nota:** FFmpeg sigue siendo necesario en el PATH del sistema.
+> **Note:** FFmpeg must still be available in the system PATH.
 
-## Formato de Salida
-
-### TXT
-```
-[00:00] GM: Bienvenidos a la sesión.
-
-[00:05] Jugador1: Entro a la taberna.
-
-[00:10] Jugador2: Busco al tabernero.
-```
-
-### Markdown
-```markdown
-# Transcripción de Sesión
-
-**[00:00] GM**
-Bienvenidos a la sesión.
-
-**[00:05] Jugador1**
-Entro a la taberna.
-```
-
-### JSON
-```json
-{
-  "metadata": {
-    "transcription_date": "2026-04-06T...",
-    "total_segments": 150,
-    "speakers": ["GM", "Jugador1", "Jugador2"]
-  },
-  "segments": [
-    {
-      "speaker": "GM",
-      "start": 0.0,
-      "end": 3.5,
-      "timestamp": "00:00",
-      "text": "Bienvenidos a la sesión."
-    }
-  ]
-}
-```
-
-## Rendimiento Estimado
-
-| Modelo | RAM Aprox. | Velocidad Relativa |
-|--------|-----------|-------------------|
-| small | ~2 GB | Rápido |
-| medium | ~5 GB | Moderado |
-| large-v3 | ~10 GB | Lento |
-
-Con `compute_type=int8` el consumo de memoria se reduce significativamente.
-
-## Estructura del Proyecto
+## Project Structure
 
 ```
-whisperer/
-├── transcriber/
-│   ├── __init__.py      # Versión del paquete
-│   ├── gui.py           # Interfaz gráfica (CustomTkinter)
-│   ├── cli.py           # Interfaz de línea de comandos (Typer)
-│   ├── transcribe.py    # Motor de transcripción (faster-whisper)
-│   ├── audio.py         # Procesamiento de audio (ffmpeg)
-│   ├── formatter.py     # Formateadores de salida
-│   ├── merger.py        # Fusión y ordenamiento de segmentos
-│   └── config.py        # Configuración central
-├── models/              # Cache de modelos (auto-generado)
-├── output/              # Transcripciones generadas
-├── main.py              # Punto de entrada (GUI por defecto)
-├── build.py             # Script de empaquetado PyInstaller
+├── main.py                # Entry point (launches GUI)
+├── build.py               # PyInstaller build script
 ├── requirements.txt
-└── README.md
+├── transcriber/
+│   ├── __init__.py        # Package version
+│   ├── gui.py             # GUI (CustomTkinter)
+│   ├── cli.py             # CLI interface (Typer)
+│   ├── transcribe.py      # Transcription engine (faster-whisper)
+│   ├── audio.py           # Audio processing (FFmpeg)
+│   ├── formatter.py       # Output formatters (TXT/MD/JSON)
+│   ├── merger.py          # Segment merging and sorting
+│   ├── summarizer.py      # AI summary generation (Ollama)
+│   ├── campaigns.py       # Campaign management
+│   ├── discord_hook.py    # Discord webhook integration
+│   └── config.py          # Central configuration
+├── campaigns/             # Campaign data and transcripts
+├── models/                # Whisper model cache (auto-downloaded)
+└── output/                # Generated transcriptions
 ```
-
-## Extensibilidad Futura
-
-El proyecto está diseñado para ser extendido con:
-
-- **Resumen automático con IA** — Agregar un módulo `summarizer.py`
-- **Detección de NPCs** — Analizar patrones de habla del GM
-- **Log de campaña** — Generar narrativa a partir de la transcripción
